@@ -1,4 +1,4 @@
-.PHONY: clean data lint requirements sync_data_to_s3 sync_data_from_s3
+.PHONY: clean data lint install create_env s3_download s3_upload test_env
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -21,12 +21,12 @@ endif
 #################################################################################
 
 ## Install Python Dependencies
-requirements: test_environment
+install: test_env
 	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
 
 ## Make Dataset
-data: requirements
+data: install
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py data/raw data/processed
 
 ## Delete all compiled Python files
@@ -39,7 +39,7 @@ lint:
 	flake8 src
 
 ## Upload Data to S3
-sync_data_to_s3:
+s3_upload:
 ifeq (default,$(PROFILE))
 	aws s3 sync data/ s3://$(BUCKET)/data/
 else
@@ -47,15 +47,15 @@ else
 endif
 
 ## Download Data from S3
-sync_data_from_s3:
+s3_download:
 ifeq (default,$(PROFILE))
 	aws s3 sync s3://$(BUCKET)/data/ data/
 else
 	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE)
 endif
 
-## Set up python interpreter environment
-create_environment:
+## Create new clean python interpreter environment
+create_env:
 ifeq (True,$(HAS_CONDA))
 		@echo ">>> Detected conda, creating conda environment."
 ifeq (3,$(findstring 3,$(PYTHON_INTERPRETER)))
@@ -73,7 +73,7 @@ else
 endif
 
 ## Test python environment is setup correctly
-test_environment:
+test_env:
 	$(PYTHON_INTERPRETER) test_environment.py
 
 #################################################################################
