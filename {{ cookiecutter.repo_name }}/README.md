@@ -3,6 +3,52 @@
 {{cookiecutter.description}}
 
 
+## Installation
+
+1. Prepare a virtual python environment(conda or python-venv)
+```
+make create_env
+```
+2. Activate the environment
+3. Install all python dependencies
+```
+make install
+```
+
+
+## Prepare Datasets
+
+### Download raw data
+
+
+
+### Make processed data from raw data
+```
+make data
+```
+
+
+## Usage
+
+```
+make <option>
+```
+
+Run `make help` for all available options
+```
+Available rules:
+
+clean               Delete all compiled Python files 
+create_env          Create new clean python interpreter environment 
+data                Make Dataset 
+install             Install Python Dependencies 
+lint                Lint using flake8 
+s3_download         Download Data from S3 
+s3_upload           Upload Data to S3 
+test_env            Test python environment is setup correctly 
+```
+
+
 ## Project Organization
 ```
 ├── LICENSE
