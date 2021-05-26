@@ -40,7 +40,7 @@ lint:
 
 ## Upload Data to S3
 s3_upload:
-	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE) --no-follow-symlinks --exclude "*/.~*"
+	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE) --delete --no-follow-symlinks --exclude "*/.~*"
 
 ## Download Data from S3
 s3_download:
