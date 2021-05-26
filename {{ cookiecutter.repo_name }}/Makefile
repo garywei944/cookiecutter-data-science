@@ -40,19 +40,11 @@ lint:
 
 ## Upload Data to S3
 s3_upload:
-ifeq (default,$(PROFILE))
-	aws s3 sync data/ s3://$(BUCKET)/data/
-else
 	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE)
-endif
 
 ## Download Data from S3
 s3_download:
-ifeq (default,$(PROFILE))
-	aws s3 sync s3://$(BUCKET)/data/ data/
-else
 	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE)
-endif
 
 ## Create new clean python interpreter environment
 create_env:
