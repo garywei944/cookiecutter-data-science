@@ -88,6 +88,8 @@ target/
 # Mypy cache
 .mypy_cache/
 
+logs
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
