@@ -44,7 +44,7 @@ s3_upload:
 
 ## Download Data from S3
 s3_download:
-	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE)
+	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE) --no-follow-symlinks
 
 ## Create new clean python interpreter environment
 create_env:
