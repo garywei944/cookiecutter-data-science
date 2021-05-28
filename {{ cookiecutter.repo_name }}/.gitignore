@@ -76,7 +76,10 @@ target/
 .ipynb_checkpoints/
 
 # exclude data from source control by default
-/data/
+/data/*
+!/data/*/
+/data/*/*
+
 
 # Mac OS-specific storage files
 .DS_Store
@@ -88,7 +91,7 @@ target/
 # Mypy cache
 .mypy_cache/
 
-logs
+logs/*
 
 ### Python template
 # Byte-compiled / optimized / DLL files
@@ -230,3 +233,4 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+!.gitkeep
