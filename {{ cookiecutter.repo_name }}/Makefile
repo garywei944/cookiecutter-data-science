@@ -5,10 +5,10 @@
 #################################################################################
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-BUCKET = {{ cookiecutter.s3_bucket }}
-PROFILE = {{ cookiecutter.aws_profile }}
-PROJECT_NAME = {{ cookiecutter.repo_name }}
-PYTHON_INTERPRETER = {{ cookiecutter.python_interpreter }}
+BUCKET = garywei944/projects/NoteAid-Annotation
+PROFILE = default
+PROJECT_NAME = NoteAid-Annotation
+PYTHON_INTERPRETER = python3
 
 ifeq (,$(shell which conda))
 HAS_CONDA=False
@@ -39,12 +39,20 @@ lint:
 	flake8 src
 
 ## Upload Data to S3
+s3_safe_upload:
+	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE) --no-follow-symlinks --exclude "*/.~*"
+
+## Upload Data to S3
 s3_upload:
-	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE) --delete --no-follow-symlinks --exclude "*/.~*"
+	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE) --no-follow-symlinks --exclude "*/.~*" --delete
+
+## Download Data from S3
+s3_safe_download:
+	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE) --no-follow-symlinks
 
 ## Download Data from S3
 s3_download:
-	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE) --no-follow-symlinks
+	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE) --no-follow-symlinks --delete
 
 ## Create new clean python interpreter environment
 create_env:
@@ -55,7 +63,7 @@ ifeq (3,$(findstring 3,$(PYTHON_INTERPRETER)))
 else
 	conda create --name $(PROJECT_NAME) python=2.7
 endif
-		@echo ">>> New conda env created. Activate with:\nconda activate $(PROJECT_NAME)"
+		@echo ">>> New conda env created. Activate with:\nsource activate $(PROJECT_NAME)"
 else
 	$(PYTHON_INTERPRETER) -m pip install -q virtualenv virtualenvwrapper
 	@echo ">>> Installing virtualenvwrapper if not already installed.\nMake sure the following lines are in shell startup file\n\
