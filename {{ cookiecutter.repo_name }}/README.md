@@ -5,12 +5,7 @@
 
 ## Installation
 
-1. Prepare a virtual python environment(conda or python-venv)
-```
-make create_env
-```
-2. Activate the environment
-3. Install all python dependencies
+Install conda environment and all python dependencies
 ```
 make install
 ```
@@ -39,13 +34,13 @@ Run `make help` for all available options
 Available rules:
 
 clean               Delete all compiled Python files 
-create_env          Create new clean python interpreter environment 
 data                Make Dataset 
-install             Install Python Dependencies 
+download            Download Data from S3, no deletion 
+install             Install mamba if not installed, then install conda environment with mamba 
 lint                Lint using flake8 
-s3_download         Download Data from S3 
-s3_upload           Upload Data to S3 
-test_env            Test python environment is setup correctly 
+pull                Download Data from S3, with deletion 
+push                Upload Data to S3, with deletion 
+upload              Upload Data to S3, no deletion 
 ```
 
 
@@ -77,8 +72,7 @@ test_env            Test python environment is setup correctly
 │
 ├── sandbox            <- Sandbox for anything that may not be included in other directories
 │
-├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-│                         generated with `pip freeze > requirements.txt`
+├── environment.yml    <- The requirements file for reproducing the analysis environment.
 │
 ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
 ├── src                <- Source code for use in this project.

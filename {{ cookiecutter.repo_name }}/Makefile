@@ -1,33 +1,29 @@
-.PHONY: clean data lint install create_env s3_download s3_upload test_env
+.PHONY: clean data lint install upload push download pull
 
 #################################################################################
 # GLOBALS                                                                       #
 #################################################################################
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-BUCKET = garywei944/projects/NoteAid-Annotation
-PROFILE = default
-PROJECT_NAME = NoteAid-Annotation
-PYTHON_INTERPRETER = python3
+BUCKET = {{ cookiecutter.s3_bucket }}
+PROFILE = {{ cookiecutter.aws_profile }}
+PROJECT_NAME = {{ cookiecutter.repo_name }}
 
-ifeq (,$(shell which conda))
-HAS_CONDA=False
-else
-HAS_CONDA=True
-endif
 
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
 
-## Install Python Dependencies
-install: test_env
-	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
-	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
+## Install mamba if not installed, then install conda environment with mamba
+install:
+ifeq (,$(shell which mamba))
+	conda install -n base mamba
+endif
+	mamba env create -f environment.yml
 
 ## Make Dataset
 data:
-	$(PYTHON_INTERPRETER) src/data/make_dataset.py data/raw data/processed
+	python src/data/make_dataset.py data/raw data/processed
 
 ## Delete all compiled Python files
 clean:
@@ -38,43 +34,22 @@ clean:
 lint:
 	flake8 src
 
-## Upload Data to S3
-s3_safe_upload:
+## Upload Data to S3, no deletion
+upload:
 	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE) --no-follow-symlinks --exclude "*/.~*"
 
-## Upload Data to S3
-s3_upload:
+## Upload Data to S3, with deletion
+push:
 	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE) --no-follow-symlinks --exclude "*/.~*" --delete
 
-## Download Data from S3
-s3_safe_download:
+## Download Data from S3, no deletion
+download:
 	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE) --no-follow-symlinks
 
-## Download Data from S3
-s3_download:
+## Download Data from S3, with deletion
+pull:
 	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE) --no-follow-symlinks --delete
 
-## Create new clean python interpreter environment
-create_env:
-ifeq (True,$(HAS_CONDA))
-		@echo ">>> Detected conda, creating conda environment."
-ifeq (3,$(findstring 3,$(PYTHON_INTERPRETER)))
-	conda create --name $(PROJECT_NAME) python=3
-else
-	conda create --name $(PROJECT_NAME) python=2.7
-endif
-		@echo ">>> New conda env created. Activate with:\nsource activate $(PROJECT_NAME)"
-else
-	$(PYTHON_INTERPRETER) -m pip install -q virtualenv virtualenvwrapper
-	@echo ">>> Installing virtualenvwrapper if not already installed.\nMake sure the following lines are in shell startup file\n\
-	export WORKON_HOME=$$HOME/.virtualenvs\nexport PROJECT_HOME=$$HOME/Devel\nsource /usr/local/bin/virtualenvwrapper.sh\n"
-	@bash -c "source `which virtualenvwrapper.sh`;mkvirtualenv $(PROJECT_NAME) --python=$(PYTHON_INTERPRETER)"
-	@echo ">>> New virtualenv created. Activate with:\nworkon $(PROJECT_NAME)"
-endif
-
-## Test python environment is setup correctly
-test_env:
-	$(PYTHON_INTERPRETER) test_environment.py
 
 #################################################################################
 # PROJECT RULES                                                                 #

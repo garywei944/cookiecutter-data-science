@@ -1,0 +1,13 @@
+name: {{ cookiecutter.env_name }}
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python-dotenv
+
+  # Development
+  - awscli
+  - click
+  - coverage
+  - sphinx
+  - flake8
