@@ -6,5 +6,5 @@
     "description": "A short description of the project.",
     "open_source_license": ["MIT", "BSD-3-Clause", "No license file"],
     "s3_bucket": "garywei944/projects/{{ cookiecutter.repo_name }}",
-    "aws_profile": "default",
+    "aws_profile": "default"
 }
