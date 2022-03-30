@@ -1,4 +1,4 @@
-.PHONY: clean data lint install upload push download pull
+.PHONY: clean lint install
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -14,16 +14,9 @@ PROJECT_NAME = {{ cookiecutter.repo_name }}
 # COMMANDS                                                                      #
 #################################################################################
 
-## Install mamba if not installed, then install conda environment with mamba
+## Install environment
 install:
-ifeq (,$(shell which mamba))
-	conda install -n base mamba
-endif
-	mamba env create -f environment.yml
-
-## Make Dataset
-data:
-	python src/data/make_dataset.py data/raw data/processed
+	@echo "Please refer to the instructions in README"  # TODO: make install.sh script if necessary
 
 ## Delete all compiled Python files
 clean:
@@ -34,21 +27,24 @@ clean:
 lint:
 	flake8 src
 
-## Upload Data to S3, no deletion
-upload:
-	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE) --no-follow-symlinks --exclude "*/.~*"
 
-## Upload Data to S3, with deletion
-push:
-	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE) --no-follow-symlinks --exclude "*/.~*" --delete
+# TODO: Uncomment if use S3, otherwise remove the following
 
-## Download Data from S3, no deletion
-download:
-	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE) --no-follow-symlinks
-
-## Download Data from S3, with deletion
-pull:
-	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE) --no-follow-symlinks --delete
+### Upload Data to S3, no deletion
+#upload:
+#	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE) --no-follow-symlinks --exclude "*/.~*"
+#
+### Upload Data to S3, with deletion
+#push:
+#	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE) --no-follow-symlinks --exclude "*/.~*" --delete
+#
+### Download Data from S3, no deletion
+#download:
+#	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE) --no-follow-symlinks
+#
+### Download Data from S3, with deletion
+#pull:
+#	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE) --no-follow-symlinks --delete
 
 
 #################################################################################
